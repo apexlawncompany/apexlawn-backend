@@ -25,6 +25,9 @@ app.get('/', async (req, res) => {
   );
 });
 
+/**
+ *  Get all catalog data
+ */
 app.get('/catalog', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM catalog');
