@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 import pool from './config/db.js';
 import catalogRouts from './routes/catalogRoutes.js';
 import errorHandling from './middleware/errorHandler.js';
-
+import authRoutes from './routes/authRoutes.js';
+import { catchAsync } from './utils/catchError.js';
 dotenv.config();
 
 const app = express();
@@ -21,7 +22,13 @@ app.use(cors());
  *  Routs
  */
 
-app.use('/api', catalogRouts);
+app.use('/api/v1', catalogRouts);
+app.use('/api/v1', authRoutes);
+app.use('*', catchAsync(async (req, res) => {
+
+  throw new Error(`${req.originalUrl} not found`);
+
+}));
 
 /**
  *  error handling
@@ -30,10 +37,7 @@ app.use('/api', catalogRouts);
 app.use(errorHandling);
 
 app.get('/', async (req, res) => {
-  console.log('start db testing');
   const result = await pool.query('SELECT current_database()');
-  console.log('End db');
-
   res.send(
     `The database name  ${JSON.stringify(result?.rows[0].current_database)}`
   );

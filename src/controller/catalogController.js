@@ -5,15 +5,10 @@
 import {
   getAllCatalogService,
   getAllCatalogByIdService,
+  createCatalogService,
 } from '../models/catalogModel.js';
+import { handleResponse } from '../utils/catchError.js';
 
-export const handleResponse = (res, status, message, data = null) => {
-  res.status(status).json({
-    status,
-    message,
-    data,
-  });
-};
 
 export const getAllCatalog = async (req, res, next) => {
   try {
@@ -35,6 +30,16 @@ export const getCatalogById = async (req, res, next) => {
     if (!catalog)
       return handleResponse(res, 404, 'Catalog with given id not found');
     handleResponse(res, 200, 'Found catalog successfully', catalog);
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+export const createCatalog = async (req, res, next) => {
+  try {
+    const catalog = await createCatalogService(req.body);
+    handleResponse(res, 201, 'Catalog created successfully', catalog);
   } catch (err) {
     next(err);
   }
